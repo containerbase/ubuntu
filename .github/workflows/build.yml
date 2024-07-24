@@ -47,7 +47,7 @@ jobs:
         run: |
           tmp_dir="$(mktemp -d)"
           curl -sSLf "https://github.com/visualon/skopeo-prebuild/releases/download/${{ env.SKOPEO_VERSION }}/skopeo-${{ env.SKOPEO_VERSION }}-focal-x86_64.tar.xz" -o "${tmp_dir}/skopeo.tar.xz"
-          bsdtar --strip 1 -xf "${tmp_dir}/skopeo.tar.xz"
+          tar --strip 1 -xf "${tmp_dir}/skopeo.tar.xz"
 
       - name: Docker registry login
         if: env.DRY_RUN == 'false'
