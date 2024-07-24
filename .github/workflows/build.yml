@@ -68,9 +68,9 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ env.OWNER }} --password-stdin
 
-      - name: Publish to ghcr.io
+      - name: Publish ${{matrix.tag}} to ghcr.io
         run: |
           if [[ "${DRY_RUN}" == "false" ]]; then
-            ./skopeo copy --preserve-digests --multi-arch all --digestfile=digest.txt docker://docker.io/library/ubuntu:${{env.tag}} docker://ghcr.io/${{ env.OWNER }}:${{env.tag}}
+            ./skopeo copy --preserve-digests --multi-arch all --digestfile=digest.txt docker://docker.io/library/ubuntu:${{matrix.tag}} docker://ghcr.io/${{ env.OWNER }}:${{matrix.tag}}
             cosign sign -y "ghcr.io/${{ env.OWNER }}:$(cat digest.txt)"
           fi
