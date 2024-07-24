@@ -71,4 +71,4 @@ jobs:
         if: env.DRY_RUN == 'false'
         run: |
           ./skopeo copy --multi-arch all --digestfile=digest.txt docker://docker.io/library/ubuntu:${{matrix.tag}} docker://ghcr.io/${{ github.repository }}:${{matrix.tag}}
-          cosign sign -y "ghcr.io/${{ github.repository }}:$(cat digest.txt)"
+          cosign sign -y "ghcr.io/${{ github.repository }}@$(cat digest.txt)"
