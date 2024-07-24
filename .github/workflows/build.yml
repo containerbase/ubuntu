@@ -60,5 +60,5 @@ jobs:
           if [[ "${DRY_RUN}" == "true" ]]; then
             ./skopeo sync --dry-run --preserve-digests --src docker --dest docker docker.io/library/ubuntu ghcr.io/${{ env.OWNER }}
           else
-            ./skopeo sync --dry-run --preserve-digests --src docker --dest docker docker.io/library/ubuntu ghcr.io/${{ env.OWNER }}
+            ./skopeo sync --preserve-digests --src docker --dest docker docker.io/library/ubuntu ghcr.io/${{ env.OWNER }}
           fi
