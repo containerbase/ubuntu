@@ -1,0 +1,63 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  DRY_RUN: ${{ github.ref != 'refs/heads/main' }}
+  OWNER: ${{ github.repository_owner }}
+  HUSKY: 0
+  SKOPEO_VERSION: 1.15.2 # renovate: datasource=github-releases depName=skopeo packageName=visualon/skopeo-prebuild versioning=semver
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - run: corepack enable
+      - run: pnpm install
+      - run: pnpm prettier
+
+  build:
+    needs:
+      - lint
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      packages: write
+
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20 # v3.5.0
+
+      - name: install skopeo v${{ env.SKOPEO_VERSION }}
+        run: |
+          tmp_dir="$(mktemp -d)"
+          curl -sSLf "https://github.com/visualon/skopeo-prebuild/releases/download/${{ env.SKOPEO_VERSION }}/skopeo-${{ env.SKOPEO_VERSION }}-focal-x86_64.tar.xz" -o "${tmp_dir}/skopeo.tar.xz"
+          bsdtar --strip 1 -xf "${tmp_dir}/skopeo.tar.xz"
+
+      - name: Docker registry login
+        if: env.DRY_RUN == 'false'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ env.OWNER }} --password-stdin
+
+      - name: Publish to ghcr.io
+        run: |
+          if [[ "${DRY_RUN}" == "true" ]]; then
+            ./skopeo sync --dry-run --preserve-digests --src docker --dest docker docker.io/library/ubuntu ghcr.io/${{ env.OWNER }}
+          else
+            ./skopeo sync --dry-run --preserve-digests --src docker --dest docker docker.io/library/ubuntu ghcr.io/${{ env.OWNER }}
+          fi
