@@ -17,7 +17,6 @@ concurrency:
 
 env:
   DRY_RUN: ${{ github.ref != 'refs/heads/main' }}
-  OWNER: ${{ github.repository_owner }}
   HUSKY: 0
   SKOPEO_VERSION: 1.15.2 # renovate: datasource=github-releases depName=skopeo packageName=visualon/skopeo-prebuild versioning=semver
 
@@ -66,11 +65,10 @@ jobs:
       - name: Docker registry login
         if: env.DRY_RUN == 'false'
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ env.OWNER }} --password-stdin
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
       - name: Publish ${{matrix.tag}} to ghcr.io
+        if: env.DRY_RUN == 'false'
         run: |
-          if [[ "${DRY_RUN}" == "false" ]]; then
-            ./skopeo copy --preserve-digests --multi-arch all --digestfile=digest.txt docker://docker.io/library/ubuntu:${{matrix.tag}} docker://ghcr.io/${{ env.OWNER }}:${{matrix.tag}}
-            cosign sign -y "ghcr.io/${{ env.OWNER }}:$(cat digest.txt)"
-          fi
+          ./skopeo copy --multi-arch all --digestfile=digest.txt docker://docker.io/library/ubuntu:${{matrix.tag}} docker://ghcr.io/${{ github.repository }}:${{matrix.tag}}
+          cosign sign -y "ghcr.io/${{ github.repository }}:$(cat digest.txt)"
