@@ -42,6 +42,15 @@ jobs:
       id-token: write
       packages: write
 
+    strategy:
+      fail-fast: false
+      matrix:
+        tag:
+          - 20.04
+          - 22.04
+          - 24.04
+          - latest
+
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
@@ -61,8 +70,7 @@ jobs:
 
       - name: Publish to ghcr.io
         run: |
-          if [[ "${DRY_RUN}" == "true" ]]; then
-            ./skopeo sync --dry-run --preserve-digests --keep-going --src docker --dest docker docker.io/library/ubuntu ghcr.io/${{ env.OWNER }}
-          else
-            ./skopeo sync --preserve-digests --keep-going --src docker --dest docker docker.io/library/ubuntu ghcr.io/${{ env.OWNER }}
+          if [[ "${DRY_RUN}" == "false" ]]; then
+            ./skopeo copy --preserve-digests --multi-arch all --digestfile=digest.txt docker://docker.io/library/ubuntu:${{env.tag}} docker://ghcr.io/${{ env.OWNER }}:${{env.tag}}
+            cosign sign -y "ghcr.io/${{ env.OWNER }}:$(cat digest.txt)"
           fi
