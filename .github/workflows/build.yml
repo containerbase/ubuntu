@@ -58,7 +58,7 @@ jobs:
       - name: install skopeo v${{ env.SKOPEO_VERSION }}
         run: |
           tmp_dir="$(mktemp -d)"
-          curl -sSLf "https://github.com/visualon/skopeo-prebuild/releases/download/${{ env.SKOPEO_VERSION }}/skopeo-${{ env.SKOPEO_VERSION }}-focal-x86_64.tar.xz" -o "${tmp_dir}/skopeo.tar.xz"
+          curl -sSLf "https://github.com/visualon/skopeo-prebuild/releases/download/${{ env.SKOPEO_VERSION }}/skopeo-${{ env.SKOPEO_VERSION }}-x86_64.tar.xz" -o "${tmp_dir}/skopeo.tar.xz"
           tar --strip 2 -xf "${tmp_dir}/skopeo.tar.xz"
           ls -la .
 
