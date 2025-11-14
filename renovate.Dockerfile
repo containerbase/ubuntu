@@ -8,4 +8,4 @@ FROM ubuntu:22.04@sha256:14f0a626be0c1f1f67ef565a7be8e41b9914bc8bdf0884e4e9bb7cc
 
 FROM ubuntu:24.04@sha256:4a5ffc07dd015f03d6cb56f209db27ed2378056f7cc8a70ae11d0c35718ed3e6
 
-FROM ubuntu:latest@sha256:4a5ffc07dd015f03d6cb56f209db27ed2378056f7cc8a70ae11d0c35718ed3e6
+FROM ubuntu:latest@sha256:e96e81f410a9f9cae717e6cdd88cc2a499700ff0bb5061876ad24377fcc517d7
