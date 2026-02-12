@@ -17,7 +17,7 @@ concurrency:
 
 env:
   DRY_RUN: ${{ github.ref != 'refs/heads/main' }}
-  SKOPEO_VERSION: 1.21.0 # renovate: datasource=github-releases depName=skopeo packageName=visualon/skopeo-prebuild versioning=semver
+  SKOPEO_VERSION: 1.22.0 # renovate: datasource=github-releases depName=skopeo packageName=visualon/skopeo-prebuild versioning=semver
 
 permissions:
   contents: read
