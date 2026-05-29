@@ -69,7 +69,7 @@ jobs:
       - name: Docker registry login
         if: env.DRY_RUN == 'false'
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+          echo "${{ secrets.GITHUB_TOKEN }}" | ./skopeo login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
       - name: Publish ${{matrix.tag}} to ghcr.io
         if: env.DRY_RUN == 'false'
