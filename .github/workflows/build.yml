@@ -22,15 +22,53 @@ permissions:
 
 jobs:
   lint:
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-slim
     timeout-minutes: 10
+    permissions:
+      contents: read
+      checks: write # shellcheck annotations
+    env:
+      # node and pnpm come from the setup action, so `mise exec` must not
+      # install them again
+      MISE_EXEC_AUTO_INSTALL: 'false'
+
     steps:
       - name: ⚙️ Setup
         uses: containerbase/internal-tools/setup@59f82735f639df5ecc8febc4ae9d10ed8ea03c7a # v5.3.15
         with:
           save-cache: true
 
-      - run: pnpm prettier
+      - name: lint
+        run: pnpm oxfmt
+
+      - name: Install the workflow linters
+        uses: jdx/mise-action@6612f0ef07ed2a736cd1e00a94a065522dd41195 # v5.2.5
+        with:
+          install_args: jactionlint shellcheck zizmor
+
+      - name: Check workflow files
+        run: mise exec -- jactionlint --color
+
+      - name: Run zizmor
+        run: mise exec -- zizmor --format github .github/
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: shellcheck
+        if: ${{ github.event_name != 'merge_group' }}
+        uses: reviewdog/action-shellcheck@d0b8d5fd7fad6afdb6e1b6ce1778892be4d1f427 # v1.34.1
+        with:
+          fail_level: any
+          reporter: github-pr-annotations
+          filter_mode: nofilter
+          path: |
+            .husky
+          pattern: |
+            *.sh
+          exclude: |
+            ./.git/*
+            ./.husky/_/*
+          check_all_files_with_shebangs: 'true'
 
   build:
     needs:
