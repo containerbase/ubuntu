@@ -1,0 +1,18 @@
+apiVersion: mirror.plugin.fluxcd.io/v1beta2
+kind: Config
+artifacts:
+  - source: docker.io/library/ubuntu
+    destination: ghcr.io/containerbase/ubuntu
+    # `latest` sorts first, then the three newest LTS releases
+    selector:
+      regex:
+        pattern: ^(\d[02468]\.04|latest)$
+      sortBy: alphabetical
+      limit: 4
+    includeReferrers: true
+    overwrite: true
+hosts:
+  - host: ghcr.io
+    credential:
+      username: ${GITHUB_REPOSITORY_OWNER} # ignored by GHCR; any value works
+      value: ${GH_TOKEN}
