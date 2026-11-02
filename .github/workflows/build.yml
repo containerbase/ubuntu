@@ -88,7 +88,7 @@ jobs:
 
       - uses: fluxcd/flux-mirror/actions/setup@a4e7285d65d59eafab1ff1412b82147fdd7bb516 # v0.13.0
         with:
-          version: v0.11.1 # renovate: datasource=github-releases depName=flux-mirror packageName=fluxcd/flux-mirror
+          version: v0.13.0 # renovate: datasource=github-releases depName=flux-mirror packageName=fluxcd/flux-mirror
 
       - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
 
