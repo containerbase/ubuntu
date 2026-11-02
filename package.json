@@ -1,9 +1,9 @@
 {
-  "name": "containerbase-sidecar",
+  "name": "ubuntu",
   "private": true,
   "license": "MIT",
   "author": "Michael Kriese <michael.kriese@visualon.de>",
-  "repository": "https://github.com/containerbase/sidecar.git",
+  "repository": "https://github.com/containerbase/ubuntu.git",
   "type": "module",
   "scripts": {
     "lint": "run-s oxfmt",
